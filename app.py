@@ -29,7 +29,7 @@ start_btn = st.sidebar.button("▶️ Iniciar Simulación", type="primary")
 
 # --- LÓGICA DE SIMULACIÓN ---
 if start_btn:
-    # Usamos un spinner para indicar que está calculando (la generación del video toma unos segundos)
+    # Usamos un spinner para indicar que está calculando
     with st.spinner('Lanzando miles de dardos y generando animación... por favor espera...'):
         
         # Configuración estética
@@ -135,7 +135,6 @@ if start_btn:
         anim = animation.FuncAnimation(fig, update, frames=num_frames, interval=30, blit=False)
         
         # Renderizar como componente HTML (JavaScript)
-        # Esto mantiene la fluidez perfecta de la animación
         components.html(anim.to_jshtml(), height=600)
         
         st.success("Simulación completada. Observa cómo la curva verde se ajusta a la teórica blanca.")
