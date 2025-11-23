@@ -7,13 +7,13 @@ from scipy.stats import norm
 import streamlit.components.v1 as components
 
 # Configuración de la página
-st.set_page_config(layout="wide", page_title="Simulación TLC - Concurso Docente")
+st.set_page_config(layout="wide", page_title="Simulación TLC - Layout Modificado")
 
 # Título y Descripción
 st.title("🎯 El Teorema del Límite Central: De la Geometría a la Normal")
 st.markdown("""
 Esta simulación demuestra cómo el **promedio** de variables aleatorias independientes (dardos en una diana) 
-converge a una Distribución Normal, independientemente de la distribución original, revelando el orden dentro del caos.
+converge a una Distribución Normal.
 """)
 
 # --- BARRA LATERAL (CONTROLES) ---
@@ -59,15 +59,17 @@ if start_btn:
         x_teorico = np.linspace(-0.6, 0.6, 200)
         y_teorico = norm.pdf(x_teorico, 0, sigma_teorico)
         
-        # --- 3. CONFIGURACIÓN VISUAL ---
-        fig = plt.figure(figsize=(14, 5))
-        # Ajustamos un poco los márgenes para web
-        plt.subplots_adjust(left=0.05, right=0.95, top=0.85, bottom=0.15)
+        # --- 3. CONFIGURACIÓN VISUAL (LAYOUT MODIFICADO) ---
+        # Aumentamos la altura (height) porque ahora son dos filas
+        fig = plt.figure(figsize=(10, 9)) 
         
-        fig.suptitle(f'Convergencia con n={n_tiros} dardos/día', fontsize=18, color='white', fontweight='bold')
-        gs = GridSpec(1, 3, figure=fig)
+        fig.suptitle(f'Convergencia con n={n_tiros} dardos/día', fontsize=16, color='white', fontweight='bold')
         
-        # PANEL 1: La Diana
+        # CAMBIO CLAVE: GridSpec de 2 filas y 2 columnas
+        # height_ratios=[1, 0.8] hace que la fila de arriba sea un poco más alta que la de abajo
+        gs = GridSpec(2, 2, figure=fig, height_ratios=[1, 0.8])
+        
+        # PANEL 1: La Diana (Fila 0, Columna 0) - Arriba Izquierda
         ax1 = fig.add_subplot(gs[0, 0])
         ax1.set_xlim(-0.7, 0.7); ax1.set_ylim(-0.7, 0.7)
         ax1.set_aspect('equal')
@@ -76,7 +78,7 @@ if start_btn:
         ax1.set_title("1. Promedios (Vista Real)", color='cyan')
         ax1.axis('off')
         
-        # PANEL 2: Densidad
+        # PANEL 2: Densidad (Fila 0, Columna 1) - Arriba Derecha
         ax2 = fig.add_subplot(gs[0, 1])
         ax2.set_title("2. Mapa de Calor", color='orange')
         bins_2d = np.linspace(-0.6, 0.6, 40)
@@ -84,19 +86,27 @@ if start_btn:
         mesh = ax2.pcolormesh(bins_2d, bins_2d, hist_data, cmap='inferno', shading='auto')
         ax2.set_aspect('equal'); ax2.axis('off')
         
-        # PANEL 3: Histograma
-        ax3 = fig.add_subplot(gs[0, 2])
-        ax3.set_title("3. Distribución Marginal X", color='lime')
+        # PANEL 3: Histograma (Fila 1, Todas las columnas) - Abajo
+        ax3 = fig.add_subplot(gs[1, :]) # El ":" significa que ocupa todo el ancho
+        ax3.set_title("3. Distribución Marginal X (Convergencia a Normal)", color='lime')
         ax3.set_xlim(-0.6, 0.6)
         ax3.set_yticks([])
         
-        bins_x = np.linspace(-0.6, 0.6, 50)
+        # Quitamos bordes innecesarios del histograma para limpieza visual
+        ax3.spines['top'].set_visible(False)
+        ax3.spines['right'].set_visible(False)
+        ax3.spines['left'].set_visible(False)
+        
+        bins_x = np.linspace(-0.6, 0.6, 60) # Un poco más de resolución en los bins
         _, _, bar_container = ax3.hist([], bins=bins_x, density=True, color='lime', alpha=0.6, edgecolor='black')
         
         ax3.plot(x_teorico, y_teorico, color='white', linestyle='--', linewidth=2.5, label='Normal Teórica')
-        ax3.legend(loc='upper right', fontsize=8, frameon=False)
+        ax3.legend(loc='upper right', fontsize=9, frameon=False)
         
         info_text = fig.text(0.5, 0.02, '', ha='center', color='white', fontsize=12)
+        
+        # Ajuste de espacios para que no se solapen los títulos
+        plt.subplots_adjust(left=0.05, right=0.95, top=0.90, bottom=0.10, hspace=0.3, wspace=0.2)
         
         # --- 4. ANIMACIÓN ---
         def update(frame):
@@ -135,9 +145,9 @@ if start_btn:
         anim = animation.FuncAnimation(fig, update, frames=num_frames, interval=30, blit=False)
         
         # Renderizar como componente HTML (JavaScript)
-        components.html(anim.to_jshtml(), height=600)
+        components.html(anim.to_jshtml(), height=800) # Aumentamos height del componente para acomodar la fig más alta
         
-        st.success("Simulación completada. Observa cómo la curva verde se ajusta a la teórica blanca.")
+        st.success("Simulación completada.")
 else:
     # Mensaje de bienvenida
     st.info("👈 Configura los parámetros en el menú izquierdo y presiona 'Iniciar Simulación'.")
