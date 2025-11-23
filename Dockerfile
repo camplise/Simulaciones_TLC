@@ -5,19 +5,20 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# IMPORTANTE: Configura Matplotlib para trabajar sin pantalla (Headless)
-# Esto evita que la app falle intentando abrir una ventana en el servidor
+# IMPORTANTE: Configura Matplotlib para trabajar sin pantalla
 ENV MPLBACKEND=Agg
 
 # Directorio de trabajo
 WORKDIR /app
 
-# Instalamos dependencias del sistema mínimas necesarias
-# Eliminamos 'software-properties-common' que causaba el error
+# --- AQUÍ ESTÁ EL CAMBIO CRÍTICO ---
+# Hemos eliminado 'software-properties-common'.
+# Solo instalamos 'build-essential' y 'curl'.
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
+# -----------------------------------
 
 # Copiamos primero el requirements.txt
 COPY requirements.txt .
