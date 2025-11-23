@@ -1,5 +1,4 @@
 # Paso 1: Usar una imagen base oficial de Python.
-# 'slim' es una versión ligera que hace la imagen final más pequeña.
 FROM python:3.9-slim
 
 # Paso 2: Establecer el directorio de trabajo dentro del contenedor.
